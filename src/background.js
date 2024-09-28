@@ -1,6 +1,8 @@
 const groqApiUrl = "https://api.groq.com/openai/v1/chat/completions";
 const groqApiKey = process.env.GROQ_API_KEY
 
+const contextText = `the user is watching a lecture on coursera`
+
 async function send_api_msg(message) {
   console.log("in msg");
   const url = new URL(groqApiUrl);
@@ -9,6 +11,10 @@ async function send_api_msg(message) {
       {
         role: "user",
         content: message,
+      },
+      {
+        role: "system",
+        content: `Answer the query using this context ${contextText}`,
       },
     ],
     model: "llama3-8b-8192",
