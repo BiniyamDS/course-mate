@@ -1,5 +1,5 @@
 const groqApiUrl = "https://api.groq.com/openai/v1/chat/completions";
-const groqApiKey = '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'
+const groqApiKey = process.env.GROQ_API_KEY
 
 async function send_api_msg(message) {
   console.log("in msg");

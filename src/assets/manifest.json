@@ -1,0 +1,22 @@
+{
+  "manifest_version": 3,
+  "name": "Course Mate",
+  "version": "1.0",
+  "description": "an AI-powered Chrome extension that allows you to ask questions about your course lectures",
+  "permissions": ["activeTab", "scripting"],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "css": ["style.css"]
+    }
+  ],
+  "icons": {
+    "48": "icon.png",
+    "16": "icon.png",
+    "128": "icon.png"
+  },
+  "background": {
+    "service_worker": "background.js"
+  }
+}
