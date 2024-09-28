@@ -1,0 +1,54 @@
+#gemini-chat-container {
+    display: flex;
+    flex-direction: column; /* Stack elements vertically */
+    position: absolute; /* Allow absolute positioning */
+    margin-top: 20px; 
+    /* margin-bottom: 20px;  */
+    z-index: 999; /* Ensures the div is on top of other elements */
+    background-color: white; /* Optional: To make it stand out */
+}
+
+#gemini-chat-text-box {
+    width: 100%;
+    max-width: 250px; 
+    height: 100px;
+    padding: 15px;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    resize: none; 
+    box-sizing: border-box; 
+    margin-bottom: 10px;
+}
+
+#gemini-chat-send-button {
+    width: 100%;
+    max-width: 250px; 
+    height: 40px;
+    padding: 15px;
+    border: none;
+    border-radius: 10px;
+    background-color: #4CAF50;
+    color: #fff;
+    cursor: pointer;
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    box-sizing: border-box;
+}
+
+#gemini-chat-send-button:hover {
+    background-color: #3e8e41;
+}
+
+#gemini-chat-results {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    color: #333;
+}
