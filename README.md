@@ -4,13 +4,13 @@
 **Course Mate** is a Chrome extension that adds a collapsible chat interface to any webpage. It allows users to interact with an AI chatbot, sending messages and receiving responses in markdown format.
 
 ## TODOS
-- [ ] Fix toggle button
-- [ ] Add continuity to chat
+- [x] Fix toggle button
+- [x] Fix up UI
 - [ ] Pull context automatically from subtitles
+- [ ] Add continuity to chat
 - [ ] Restrict to use of only coursera
 - [ ] Add feature to choose between models
 - [ ] Add Ability to add your own key to the extension
-- [ ] Fix up UI
 
 ## Features
 - **Collapsible Chat Sidebar**: A toggleable chat interface that opens on the right side of any webpage.
