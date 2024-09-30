@@ -2,6 +2,8 @@ const path = require("path");
 const CopyPlugin = require("copy-webpack-plugin");
 const webpack = require("webpack");
 const dotenv = require("dotenv");
+const autoprefixer = require("autoprefixer");
+const tailwindcss = require('tailwindcss')
 
 dotenv.config();
 
@@ -29,7 +31,15 @@ module.exports = {
         },
       },
       {
-        use: ["style-loader", "css-loader"],
+        use: ["style-loader", "css-loader", {
+          loader: "postcss-loader",
+          options: {
+            postcssOptions: {
+              plugins: [tailwindcss, autoprefixer],
+            },
+          },
+        },
+      ],
         test: /\.css$/i,
       },
     ],

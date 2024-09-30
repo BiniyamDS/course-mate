@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { createRoot } from "react-dom/client";
 import { marked } from "marked";
+import './assets/style.css'
 
 function ChatSidebar() {
   const [isHidden, setIsHidden] = useState(true);
@@ -41,7 +42,7 @@ function ChatSidebar() {
             onChange={(e) => setMessage(e.target.value)}
             placeholder="Type a message..."
           />
-          <button id="gemini-chat-send-button" onClick={handleSendMessage}>
+          <button className="bg-blue-500" onClick={handleSendMessage}>
             Send
           </button>
         </div>
