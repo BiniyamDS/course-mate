@@ -1,67 +1,60 @@
+import React, { useState } from "react";
+import { createRoot } from "react-dom/client";
 import { marked } from "marked";
 
-function injectChatSidebar() {
-  console.log("Injecting chat sidebar");
+function ChatSidebar() {
+  const [isHidden, setIsHidden] = useState(true);
+  const [message, setMessage] = useState("");
+  const [result, setResult] = useState(
+    "No messages yet. Type and send a message to start the conversation."
+  );
 
-  // Create the sidebar container
-  const sidebarContainer = document.createElement("div");
-  sidebarContainer.id = "gemini-chat-sidebar";
-  sidebarContainer.classList.add("hidden"); // Initially hidden
-  document.body.appendChild(sidebarContainer);
+  const toggleSidebar = () => {
+    setIsHidden(!isHidden);
+  };
 
-  // Create the results div
-  const resultsDiv = document.createElement("div");
-  resultsDiv.id = "gemini-chat-results";
-  const result_p = document.createElement('div');  // Changed from <p> to <div> to allow multiline content
-  result_p.innerHTML = "No messages yet. Type and send a message to start the conversation.";  // Default message
-  resultsDiv.appendChild(result_p);
-  sidebarContainer.appendChild(resultsDiv);
+  const handleSendMessage = () => {
+    if (message) {
+      chrome.runtime.sendMessage({ message: message }, (response) => {
+        const aiResponseHtml = marked(response.message); // Convert markdown to HTML
+        setResult(
+          `<strong>You: </strong>${message}<p><strong>AI:</strong></p>${aiResponseHtml}`
+        );
+        setMessage(""); // Clear the text box
+      });
+    }
+  };
 
-  // Create the input container
-  const inputContainer = document.createElement("div");
-  inputContainer.classList.add("input-container");
-
-  const textBox = document.createElement("textarea");
-  textBox.id = "gemini-chat-text-box";
-  textBox.placeholder = "Type a message...";
-  inputContainer.appendChild(textBox);
-
-  const sendButton = document.createElement("button");
-  sendButton.id = "gemini-chat-send-button";
-  sendButton.textContent = "Send";
-  inputContainer.appendChild(sendButton);
-
-  sidebarContainer.appendChild(inputContainer);
-
-  // Create the toggle button
-  const toggleButton = document.createElement("button");
-  toggleButton.textContent = "Chat";
-  toggleButton.id = "gemini-chat-toggle-button";
-  document.body.appendChild(toggleButton);
-
-  // Toggle sidebar visibility
-  toggleButton.addEventListener("click", () => {
-      sidebarContainer.classList.toggle("hidden");
-      if (sidebarContainer.classList.contains("hidden")) {
-          toggleButton.textContent = "Chat";
-      } else {
-          toggleButton.textContent = "Close Chat";
-      }
-  });
-
-  // Add event listener for the send button
-  sendButton.addEventListener("click", async () => {
-      const message = textBox.value;
-      if (message) {
-          // Call the background script
-          const response = await chrome.runtime.sendMessage({ message: message });
-          const aiResponseHtml = marked(response.message);  // Convert markdown to HTML
-
-          // Update the results div with the response, preserving markdown formatting
-          result_p.innerHTML = `<strong>You: </strong>${message}<p><strong>AI:</strong></p>${aiResponseHtml}`;
-          textBox.value = ""; // Clear the text box
-      }
-  });
+  return (
+    <>
+      <button onClick={toggleSidebar}>
+        {isHidden ? "Chat" : "Close Chat"}
+      </button>
+      <div id="gemini-chat-sidebar" className={isHidden ? "hidden" : ""}>
+        <div id="gemini-chat-results">
+          <div>{result}</div>
+        </div>
+        <div className="input-container">
+          <textarea
+            id="gemini-chat-text-box"
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            placeholder="Type a message..."
+          />
+          <button id="gemini-chat-send-button" onClick={handleSendMessage}>
+            Send
+          </button>
+        </div>
+      </div>
+    </>
+  );
 }
+// Create a container for the React component
+const container = document.createElement('div');
+document.body.appendChild(container);
 
-injectChatSidebar();
+// Create a root and render the component
+const root = createRoot(container);
+root.render(<ChatSidebar />);
+
+export default ChatSidebar;
