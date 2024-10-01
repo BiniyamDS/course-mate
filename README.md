@@ -6,7 +6,7 @@
 ## TODOS
 - [x] Fix toggle button
 - [x] Fix up UI
-- [ ] Pull context automatically from subtitles
+- [x] Pull context automatically from subtitles
 - [ ] Add continuity to chat
 - [ ] Restrict to use of only coursera
 - [ ] Add feature to choose between models

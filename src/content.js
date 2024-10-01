@@ -1,89 +1,91 @@
-import React, { useState } from "react";
+import React from "react";
 import { createRoot } from "react-dom/client";
-import './assets/style.css'
-import ReactMarkDown from 'react-markdown'
-
-function ChatSidebar() {
-  const [isHidden, setIsHidden] = useState(true);
-  const [message, setMessage] = useState("");
-  const [messages, setMessages] = useState([]); // Store all messages in an array
-
-  const toggleSidebar = () => {
-    setIsHidden(!isHidden);
-  };
-
-  const handleSendMessage = () => {
-    if (message) {
-      // Add the user's message to the messages array
-      const userMessage = { text: message, sender: "user" };
-      setMessages((prevMessages) => [...prevMessages, userMessage]);
-      chrome.runtime.sendMessage({ message: message }, (response) => {
-        const aiResponseHtml = response.message // Convert markdown to HTML
-        const aiMessage = { text: aiResponseHtml, sender: "ai" };
-  
-        // Add the AI's response to the messages array
-        setMessages((prevMessages) => [...prevMessages, aiMessage]);
-        setMessage(""); // Clear the text box;
-      });
-      // Send the message to the background script
-    }
-  };
-
-  return (
-    <div className="fixed bottom-0 right-0 p-4">
-      <div
-        className={
-          isHidden ? "hidden" : "bg-white shadow-lg rounded-lg p-4 max-w-md"
-        }
-      >
-        <div className="text-gray-800">
-          <div className="text-lg font-semibold">Course Mate</div>
-          <hr className="mb-2" />
-          <div className="overflow-y-auto max-h-60 mb-4">
-            {messages.map((msg, index) => (
-              <div
-                key={index}
-                className={`mb-2 p-3 max-w-xs rounded-lg transition-all duration-300 ${
-                  msg.sender === "user"
-                    ? "bg-blue-500 text-white self-end rounded-br-none ml-10" // User message bubble
-                    : "bg-gray-200 text-gray-800 self-start rounded-bl-none mr-10" // AI message bubble
-                }`}
-              >
-                <div>
-                  <ReactMarkDown>{msg.text}</ReactMarkDown>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-        <div className="input-container mt-4">
-          <textarea
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            placeholder="Type a message..."
-            className="w-full p-4 text-lg rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-blue-500 focus:ring-1 focus:outline-none resize-none"
-          />
-          <button
-            className="bg-blue-500 text-white rounded mt-2 p-2 w-full"
-            onClick={handleSendMessage}
-          >
-            Send
-          </button>
-        </div>
-      </div>
-      <button
-        className="bg-blue-500 text-white m-2 rounded-full p-3"
-        onClick={toggleSidebar}
-      >
-        {isHidden ? "Chat" : "Close Chat"}
-      </button>
-    </div>
-  );
-}
+import "./assets/style.css";
+import ChatSidebar from "./ChatSideBar.js";
 
 // Create a container for the React component
-const container = document.createElement('div');
+const container = document.createElement("div");
 document.body.appendChild(container);
+
+function scrapeAndUpdateLinks() {
+  console.log("Scraping and updating links...");
+
+  // Scrape anchor tags with a download attribute set to "transcript.txt" and get their href attributes
+  const anchorTags = document.querySelectorAll('a[download="transcript.txt"]');
+  let hrefList = [];
+
+  console.log(
+    `Found ${anchorTags.length} anchor tags with download attribute set to "transcript.txt".`
+  );
+  anchorTags.forEach((anchor, index) => {
+    const href = anchor.getAttribute("href");
+    console.log(`Anchor ${index}: href="${href}"`);
+    if (href) {
+      hrefList.push(href); // Add href to the list
+      downloadAndStoreSubtitle(href);
+    }
+  });
+  console.log(hrefList);
+}
+
+function downloadAndStoreSubtitle(href) {
+    console.log(`Requesting to download subtitle file from: ${href}`);
+    chrome.runtime.sendMessage({ action: "fetchSubtitle", href: href }, (response) => {
+        if (response.success) {
+            console.log('Subtitle file downloaded and stored successfully.');
+            chrome.storage.local.get('subtitleContent', (data) => {
+                if (data.subtitleContent) {
+                    // Inject the subtitle into the page
+                    // console.log(data.subtitleContent)
+                } else {
+                    console.error('Subtitle content not found in storage.');
+                }
+            });
+        } else {
+            console.error('Failed to download subtitle file:', response.error);
+        }
+    });
+}
+
+function observeDOMChanges() {
+  console.log("Setting up MutationObserver...");
+
+  // Set up the MutationObserver to detect changes in the DOM
+  const observer = new MutationObserver((mutations) => {
+    console.log("MutationObserver detected changes...");
+    for (const mutation of mutations) {
+      if (mutation.addedNodes.length) {
+        console.log(
+          "New nodes added to the DOM. Running scrapeAndUpdateLinks..."
+        );
+        scrapeAndUpdateLinks();
+      }
+    }
+  });
+
+  // Start observing the body for changes
+  observer.observe(document.body, { childList: true, subtree: true });
+  console.log("MutationObserver is now observing DOM changes.");
+}
+
+// Inject the div when the DOM is fully loaded, and scrape links
+if (document.readyState === "complete") {
+  console.log("Document is already fully loaded.");
+  scrapeAndUpdateLinks();
+} else {
+  console.log(
+    "Document is not fully loaded yet. Adding load event listener..."
+  );
+  window.addEventListener("load", () => {
+    console.log(
+      "Window loaded, running injectHelloWorldDiv and scrapeAndUpdateLinks..."
+    );
+    scrapeAndUpdateLinks();
+  });
+}
+
+// Start observing for dynamically loaded content
+observeDOMChanges();
 
 // Create a root and render the component
 const root = createRoot(container);
