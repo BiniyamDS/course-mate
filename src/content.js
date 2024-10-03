@@ -7,6 +7,8 @@ import ChatSidebar from "./ChatSideBar.js";
 const container = document.createElement("div");
 document.body.appendChild(container);
 
+let observer; // Declare the observer variable
+
 function scrapeAndUpdateLinks() {
   // console.log("Scraping and updating links...");
 
@@ -25,46 +27,42 @@ function scrapeAndUpdateLinks() {
       downloadAndStoreSubtitle(href);
     }
   });
-  // console.log(hrefList);
+  console.log(hrefList);
 }
 
 function downloadAndStoreSubtitle(href) {
   console.log(`Requesting to download subtitle file from: ${href}`);
 
-  // Check if the subtitle content is already in the local storage
-  browser.storage.local.get('subtitleContent').then(data => {
-    if (data.subtitleContent) {
-      console.log('Subtitle content found in storage.');
-      // Inject the subtitle into the page
-      // console.log(data.subtitleContent);
-    } else {
-      // Subtitle content not found in storage, fetch it
-      browser.runtime.sendMessage({ action: "fetchSubtitle", href: href }).then(response => {
-        if (response.success) {
-          console.log('Subtitle file downloaded and stored successfully.');
-          browser.storage.local.get('subtitleContent').then(data => {
-            if (data.subtitleContent) {
-              // Inject the subtitle into the page
-              // console.log(data.subtitleContent);
-            } else {
-              console.error('Subtitle content not found in storage.');
-            }
-          });
-        } else {
-          console.error('Failed to download subtitle file:', response.error);
-        }
+  // Stop observing the DOM
+  if (observer) {
+    observer.disconnect();
+    console.log("Stopped observing DOM changes.");
+  }
+
+  // Fetch the subtitle content
+  browser.runtime.sendMessage({ action: "fetchSubtitle", href: href }).then(response => {
+    if (response.success) {
+      console.log('Subtitle file downloaded and stored successfully.');
+      browser.storage.local.set({ subtitleContent: response.subtitleContent }).then(() => {
+        // Inject the subtitle into the page
+        // console.log(response.subtitleContent);
       }).catch(error => {
-        console.error('Error sending message:', error);
+        console.error('Error storing subtitle content:', error);
       });
+    } else {
+      console.error('Failed to download subtitle file:', response.error);
     }
+  }).catch(error => {
+    console.error('Error sending message:', error);
   });
 }
+
 
 function observeDOMChanges() {
   console.log("Setting up MutationObserver...");
 
   // Set up the MutationObserver to detect changes in the DOM
-  const observer = new MutationObserver((mutations) => {
+  observer = new MutationObserver((mutations) => {
     // console.log("MutationObserver detected changes...");
     for (const mutation of mutations) {
       if (mutation.addedNodes.length) {

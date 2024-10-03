@@ -3,7 +3,7 @@ const groqApiKey = process.env.GROQ_API_KEY;
 
 async function send_api_msg(message) {
   console.log("in msg");
-  
+
   // Return a Promise
   return new Promise((resolve, reject) => {
     let contextText = `the user is watching a lecture on coursera`;
@@ -25,7 +25,7 @@ async function send_api_msg(message) {
           },
           {
             role: "system",
-            content: `Answer the query using this context ${contextText}`,
+            content: `Using the following lecture video transcript as context, please provide a detailed answer to the user's query. Ensure that your response is directly related to the content of the transcript and highlights relevant information. Context: ${contextText}`,
           },
         ],
         model: "llama3-8b-8192",
