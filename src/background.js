@@ -9,7 +9,7 @@ async function send_api_msg(message) {
     let contextText = `the user is watching a lecture on coursera`;
 
     // Retrieve subtitleContent from local storage
-    chrome.storage.local.get("subtitleContent", async (data) => {
+    browser.storage.local.get("subtitleContent").then((data) => {
       if (data["subtitleContent"]) {
         contextText = data["subtitleContent"];
         console.log(`in local: ${contextText}`);
@@ -31,39 +31,41 @@ async function send_api_msg(message) {
         model: "llama3-8b-8192",
       };
 
-      try {
-        const response = await fetch(url, {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${groqApiKey}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(params),
+      fetch(url, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${groqApiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(params),
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then((data) => {
+          console.log("API response data:", data); // Log the response data
+
+          if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+            throw new Error("Invalid response format");
+          }
+
+          // Resolve the Promise with the content
+          resolve(data.choices[0].message.content);
+        })
+        .catch((error) => {
+          console.error("Error in send_api_msg:", error); // Log the error
+          reject(error); // Reject the Promise with the error
         });
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        console.log("API response data:", data); // Log the response data
-
-        if (!data.choices || !data.choices[0] || !data.choices[0].message) {
-          throw new Error("Invalid response format");
-        }
-
-        // Resolve the Promise with the content
-        resolve(data.choices[0].message.content);
-      } catch (error) {
-        console.error("Error in send_api_msg:", error); // Log the error
-        reject(error); // Reject the Promise with the error
-      }
     });
   });
 }
 
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "sendMessage") {
+    console.log(request.message);
     console.log("Received message:", request);
     send_api_msg(request.message)
       .then((data) => {
@@ -78,7 +80,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
 });
 
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+browser.runtime.onMessage.addListener((request, sender, sendSubtitles) => {
   if (request.action === "fetchSubtitle") {
     fetch(
       `https://cors-anywhere.herokuapp.com/https://coursera.org${request.href}`,
@@ -92,19 +94,19 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     )
       .then((response) => response.text())
       .then((textContent) => {
-        // Store the content in Chrome storage
-        chrome.storage.local.set({ subtitleContent: textContent }, () => {
-          console.log("Subtitle content stored in Chrome storage.");
-          sendResponse({ success: true });
+        // Store the content in Firefox storage
+        browser.storage.local.set({ subtitleContent: textContent }).then(() => {
+          console.log("Subtitle content stored in Firefox storage.");
+          sendSubtitles({ success: true });
         });
       })
       .catch((error) => {
         console.error("Error downloading or storing subtitle file:", error);
-        sendResponse({ success: false, error: error.message });
+        sendSubtitles({ success: false, error: error.message });
       });
 
     return true; // Keep the message channel open for sendResponse
   }
 });
 
-chrome.runtime.setUninstallURL("https://example.com/uninstall");
+// Note: Firefox does not support setUninstallURL

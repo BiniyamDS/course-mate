@@ -15,7 +15,7 @@ function ChatSidebar() {
       // Add the user's message to the messages array
       const userMessage = { text: message, sender: "user" };
       setMessages((prevMessages) => [...prevMessages, userMessage]);
-      chrome.runtime.sendMessage({ action: "sendMessage" ,message: message }, (response) => {
+      browser.runtime.sendMessage({ action: "sendMessage" ,message: message }).then((response) => {
         const aiResponseHtml = response.message; // Convert markdown to HTML
         const aiMessage = { text: aiResponseHtml, sender: "ai" };
 

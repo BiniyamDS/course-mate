@@ -8,43 +8,56 @@ const container = document.createElement("div");
 document.body.appendChild(container);
 
 function scrapeAndUpdateLinks() {
-  console.log("Scraping and updating links...");
+  // console.log("Scraping and updating links...");
 
   // Scrape anchor tags with a download attribute set to "transcript.txt" and get their href attributes
   const anchorTags = document.querySelectorAll('a[download="transcript.txt"]');
   let hrefList = [];
 
-  console.log(
-    `Found ${anchorTags.length} anchor tags with download attribute set to "transcript.txt".`
-  );
+  // console.log(
+  //   `Found ${anchorTags.length} anchor tags with download attribute set to "transcript.txt".`
+  // );
   anchorTags.forEach((anchor, index) => {
     const href = anchor.getAttribute("href");
-    console.log(`Anchor ${index}: href="${href}"`);
+    // console.log(`Anchor ${index}: href="${href}"`);
     if (href) {
       hrefList.push(href); // Add href to the list
       downloadAndStoreSubtitle(href);
     }
   });
-  console.log(hrefList);
+  // console.log(hrefList);
 }
 
 function downloadAndStoreSubtitle(href) {
-    console.log(`Requesting to download subtitle file from: ${href}`);
-    chrome.runtime.sendMessage({ action: "fetchSubtitle", href: href }, (response) => {
+  console.log(`Requesting to download subtitle file from: ${href}`);
+
+  // Check if the subtitle content is already in the local storage
+  browser.storage.local.get('subtitleContent').then(data => {
+    if (data.subtitleContent) {
+      console.log('Subtitle content found in storage.');
+      // Inject the subtitle into the page
+      // console.log(data.subtitleContent);
+    } else {
+      // Subtitle content not found in storage, fetch it
+      browser.runtime.sendMessage({ action: "fetchSubtitle", href: href }).then(response => {
         if (response.success) {
-            console.log('Subtitle file downloaded and stored successfully.');
-            chrome.storage.local.get('subtitleContent', (data) => {
-                if (data.subtitleContent) {
-                    // Inject the subtitle into the page
-                    // console.log(data.subtitleContent)
-                } else {
-                    console.error('Subtitle content not found in storage.');
-                }
-            });
+          console.log('Subtitle file downloaded and stored successfully.');
+          browser.storage.local.get('subtitleContent').then(data => {
+            if (data.subtitleContent) {
+              // Inject the subtitle into the page
+              // console.log(data.subtitleContent);
+            } else {
+              console.error('Subtitle content not found in storage.');
+            }
+          });
         } else {
-            console.error('Failed to download subtitle file:', response.error);
+          console.error('Failed to download subtitle file:', response.error);
         }
-    });
+      }).catch(error => {
+        console.error('Error sending message:', error);
+      });
+    }
+  });
 }
 
 function observeDOMChanges() {
@@ -52,12 +65,12 @@ function observeDOMChanges() {
 
   // Set up the MutationObserver to detect changes in the DOM
   const observer = new MutationObserver((mutations) => {
-    console.log("MutationObserver detected changes...");
+    // console.log("MutationObserver detected changes...");
     for (const mutation of mutations) {
       if (mutation.addedNodes.length) {
-        console.log(
-          "New nodes added to the DOM. Running scrapeAndUpdateLinks..."
-        );
+        // console.log(
+        //   "New nodes added to the DOM. Running scrapeAndUpdateLinks..."
+        // );
         scrapeAndUpdateLinks();
       }
     }
