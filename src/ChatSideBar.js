@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import ReactMarkDown from 'react-markdown'
+import ReactMarkDown from "react-markdown";
 
-function ChatSidebar() {
+function ChatSidebar({ isSubtitleLoaded }) {
   const [isHidden, setIsHidden] = useState(true);
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]); // Store all messages in an array
@@ -15,14 +15,16 @@ function ChatSidebar() {
       // Add the user's message to the messages array
       const userMessage = { text: message, sender: "user" };
       setMessages((prevMessages) => [...prevMessages, userMessage]);
-      browser.runtime.sendMessage({ action: "sendMessage" ,message: message }).then((response) => {
-        const aiResponseHtml = response.message; // Convert markdown to HTML
-        const aiMessage = { text: aiResponseHtml, sender: "ai" };
+      browser.runtime
+        .sendMessage({ action: "sendMessage", message: message })
+        .then((response) => {
+          const aiResponseHtml = response.message; // Convert markdown to HTML
+          const aiMessage = { text: aiResponseHtml, sender: "ai" };
 
-        // Add the AI's response to the messages array
-        setMessages((prevMessages) => [...prevMessages, aiMessage]);
-        setMessage(""); // Clear the text box;
-      });
+          // Add the AI's response to the messages array
+          setMessages((prevMessages) => [...prevMessages, aiMessage]);
+          setMessage(""); // Clear the text box;
+        });
       // Send the message to the background script
     }
   };
@@ -53,6 +55,20 @@ function ChatSidebar() {
               </div>
             ))}
           </div>
+          <p
+            className={`text-gray-500 text-sm ${
+              isSubtitleLoaded ? "hidden" : ""
+            }`}
+          >
+            Loading subtitles...
+          </p>
+          <p
+            className={`text-gray-500 text-sm ${
+              isSubtitleLoaded ? "" : "hidden"
+            }`}
+          >
+            Subtitles loaded.
+          </p>
         </div>
         <div className="input-container mt-4">
           <textarea

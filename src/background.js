@@ -97,6 +97,7 @@ browser.runtime.onMessage.addListener((request, sender, sendSubtitles) => {
         // Store the content in Firefox storage
         browser.storage.local.set({ subtitleContent: textContent }).then(() => {
           console.log("Subtitle content stored in Firefox storage.");
+          console.log(textContent);
           sendSubtitles({ success: true });
         });
       })
