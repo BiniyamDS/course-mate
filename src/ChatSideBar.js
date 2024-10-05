@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import ReactMarkDown from "react-markdown";
+import { MessageCircle, X, Send } from "lucide-react";
 
 function ChatSidebar({ isSubtitleLoaded }) {
   const [isHidden, setIsHidden] = useState(true);
@@ -33,11 +34,20 @@ function ChatSidebar({ isSubtitleLoaded }) {
     <div className="fixed bottom-0 right-0 p-4">
       <div
         className={
-          isHidden ? "hidden" : "bg-white shadow-lg rounded-lg p-4 max-w-md"
+          isHidden ? "hidden" : "bg-white shadow-lg rounded-lg p-4 max-w-md m-2"
         }
       >
         <div className="text-gray-800">
-          <div className="text-lg font-semibold">Course Mate</div>
+          <div className="text-lg flex flex-row justify-between items-center font-semibold">
+            <h1>Course Mate</h1>
+            <button
+              className="bg-black text-white m-2 rounded-full p-3"
+              onClick={toggleSidebar}
+            >
+              <X size={10} />
+            </button>
+          </div>
+
           <hr className="mb-2" />
           <div className="overflow-y-auto max-h-60 mb-4">
             {messages.map((msg, index) => (
@@ -85,12 +95,16 @@ function ChatSidebar({ isSubtitleLoaded }) {
           </button>
         </div>
       </div>
-      <button
-        className="bg-blue-500 text-white m-2 rounded-full p-3"
-        onClick={toggleSidebar}
-      >
-        {isHidden ? "Chat" : "Close Chat"}
-      </button>
+      {isHidden ? (
+        <button
+          className="bg-black mr-20 text-white m-2 rounded-full p-3"
+          onClick={toggleSidebar}
+        >
+          <Send size={20} />
+        </button>
+      ) : (
+        ""
+      )}
     </div>
   );
 }
