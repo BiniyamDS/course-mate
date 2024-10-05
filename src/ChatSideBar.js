@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import ReactMarkDown from "react-markdown";
-import { MessageCircle, X, Send } from "lucide-react";
+import { MessageCircle, X, Send, Trash2 } from "lucide-react";
 
 function ChatSidebar({ isSubtitleLoaded }) {
   const [isHidden, setIsHidden] = useState(true);
@@ -30,6 +30,10 @@ function ChatSidebar({ isSubtitleLoaded }) {
     }
   };
 
+  const handleClearMessages = () => {
+    setMessages([]);
+  };
+
   return (
     <div className="fixed bottom-0 right-0 p-4">
       <div
@@ -40,12 +44,20 @@ function ChatSidebar({ isSubtitleLoaded }) {
         <div className="text-gray-800">
           <div className="text-lg flex flex-row justify-between items-center font-semibold">
             <h1>Course Mate</h1>
-            <button
-              className="bg-black text-white m-2 rounded-full p-3"
-              onClick={toggleSidebar}
-            >
-              <X size={10} />
-            </button>
+            <div className="flex flex-row">
+              <button
+                className="bg-black text-white m-2 rounded-full p-3"
+                onClick={toggleSidebar}
+              >
+                <X size={10} />
+              </button>
+              <button
+                className="bg-red-500 text-white m-2 rounded-full p-3"
+                onClick={handleClearMessages}
+              >
+                <Trash2 size={10} />
+              </button>
+            </div>
           </div>
 
           <hr className="mb-2" />
