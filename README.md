@@ -7,9 +7,9 @@
 - [x] Fix toggle button
 - [x] Fix up UI
 - [x] Pull context automatically from subtitles
-- [ ] Update UI when subtitles are loaded
-- [ ] Restrict to use of only coursera
-- [ ] Add continuity to chat
+- [x] Update UI when subtitles are loaded
+- [x] Add continuity to chat
+- [x] Restrict to use of only coursera
 - [ ] Add feature to choose between models
 - [ ] Add Ability to add your own key to the extension
 

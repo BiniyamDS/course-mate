@@ -16,8 +16,14 @@ function ChatSidebar({ isSubtitleLoaded }) {
       // Add the user's message to the messages array
       const userMessage = { text: message, sender: "user" };
       setMessages((prevMessages) => [...prevMessages, userMessage]);
+
+      // Send the user's message and chat history to the background script
       browser.runtime
-        .sendMessage({ action: "sendMessage", message: message })
+        .sendMessage({
+          action: "sendMessage",
+          message: message,
+          messages: messages,
+        })
         .then((response) => {
           const aiResponseHtml = response.message; // Convert markdown to HTML
           const aiMessage = { text: aiResponseHtml, sender: "ai" };
@@ -25,8 +31,10 @@ function ChatSidebar({ isSubtitleLoaded }) {
           // Add the AI's response to the messages array
           setMessages((prevMessages) => [...prevMessages, aiMessage]);
           setMessage(""); // Clear the text box;
+        })
+        .catch((error) => {
+          console.error("Error sending message:", error);
         });
-      // Send the message to the background script
     }
   };
 

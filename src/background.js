@@ -1,10 +1,9 @@
 const groqApiUrl = "https://api.groq.com/openai/v1/chat/completions";
 const groqApiKey = process.env.GROQ_API_KEY;
 
-async function send_api_msg(message) {
+async function send_api_msg(message, chat_history) {
   console.log("in msg");
 
-  // Return a Promise
   return new Promise((resolve, reject) => {
     let contextText = `the user is watching a lecture on coursera`;
 
@@ -17,11 +16,20 @@ async function send_api_msg(message) {
 
       const url = new URL(groqApiUrl);
       console.log(`context: ${contextText}`);
+
+      // Convert your stored chat history to the required format for the API
+      const formattedHistory = chat_history.map((msg) => ({
+        role: msg.sender === "user" ? "user" : "assistant",
+        content: msg.text,
+      }));
+
+      // Build the API request params
       const params = {
         messages: [
+          ...formattedHistory,  // Include the converted chat history
           {
             role: "user",
-            content: message,
+            content: message,  // Current user message
           },
           {
             role: "system",
@@ -31,6 +39,7 @@ async function send_api_msg(message) {
         model: "llama3-8b-8192",
       };
 
+      // Make the API request
       fetch(url, {
         method: "POST",
         headers: {
@@ -67,7 +76,7 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "sendMessage") {
     console.log(request.message);
     console.log("Received message:", request);
-    send_api_msg(request.message)
+    send_api_msg(request.message, request.messages)
       .then((data) => {
         console.log("Sending response:", data);
         sendResponse({ message: data });
