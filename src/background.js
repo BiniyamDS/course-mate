@@ -26,17 +26,17 @@ async function send_api_msg(message, chat_history) {
       // Build the API request params
       const params = {
         messages: [
-          ...formattedHistory,  // Include the converted chat history
+          ...formattedHistory, // Include the converted chat history
           {
             role: "user",
-            content: message,  // Current user message
+            content: message, // Current user message
           },
           {
             role: "system",
             content: `Using the following lecture video transcript as context, please provide a detailed answer to the user's query. Ensure that your response is directly related to the content of the transcript and highlights relevant information. Context: ${contextText}`,
           },
         ],
-        model: "llama3-8b-8192",
+        model: "llama-3.1-8b-instant",
       };
 
       // Make the API request
