@@ -11,8 +11,13 @@ function ChatSidebar({ isSubtitleLoaded }) {
   const [messages, setMessages] = useState([
     { id: 1, text: "Hello! How can I help you today?", sender: "ai" },
   ]);
-  const models = ['gemma2-9b-it', 'llama-3.1-70b-versatile', 'llama-3.1-8b-instant']
+  const models = [
+    "gemma2-9b-it",
+    "llama-3.1-70b-versatile",
+    "llama-3.1-8b-instant",
+  ];
   const [inputMessage, setInputMessage] = useState("");
+  const [selectedModel, setSelectedModel] = useState(models[0]);
   const textareaRef = useRef(null);
   const scrollAreaRef = useRef(null);
 
@@ -33,6 +38,7 @@ function ChatSidebar({ isSubtitleLoaded }) {
           action: "sendMessage",
           message: inputMessage,
           messages: messages,
+          model: selectedModel, // Include the selected model in the request
         })
         .then((response) => {
           const aiMessage = {
@@ -84,20 +90,33 @@ function ChatSidebar({ isSubtitleLoaded }) {
           <div className="bg-white border border-border rounded-lg shadow-lg w-1/2 h-4/5 flex flex-col overflow-hidden pointer-events-auto">
             <div className="flex justify-between items-center p-4 border-b border-border">
               <h2 className="text-lg text-black font-semibold">Chat</h2>
-              <button
-                className="p-2"
-                onClick={toggleSidebar}
-                aria-label="Close sidebar"
-              >
-                <X size={24} />
-              </button>
-              <button
-                className="p-2 text-red-500"
-                onClick={() => setMessages([])}
-                aria-label="Clear chat"
-              >
-                <Trash2 size={24} />
-              </button>
+              <div className="flex items-center space-x-4">
+                <select
+                  value={selectedModel}
+                  onChange={(e) => setSelectedModel(e.target.value)}
+                  className="p-2 border rounded-md bg-white text-black"
+                >
+                  {models.map((model, index) => (
+                    <option key={index} value={model}>
+                      {model}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  className="p-2 text-red-500"
+                  onClick={() => setMessages([])}
+                  aria-label="Clear chat"
+                >
+                  <Trash2 size={24} />
+                </button>
+                <button
+                  className="p-2"
+                  onClick={toggleSidebar}
+                  aria-label="Close sidebar"
+                >
+                  <X size={24} />
+                </button>
+              </div>
             </div>
 
             <div className="flex-grow p-4 overflow-y-auto" ref={scrollAreaRef}>

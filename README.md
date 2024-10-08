@@ -10,9 +10,9 @@
 - [x] Update UI when subtitles are loaded
 - [x] Add continuity to chat
 - [x] Restrict to use of only coursera
-- [ ] Better markdown parsing
+- [x] Better markdown parsing
+- [x] Add feature to choose between models
 - [ ] Pressing enter to send message
-- [ ] Add feature to choose between models
 - [ ] Add Ability to add your own key to the extension
 
 ## Features

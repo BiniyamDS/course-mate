@@ -1,7 +1,7 @@
 const groqApiUrl = "https://api.groq.com/openai/v1/chat/completions";
 const groqApiKey = process.env.GROQ_API_KEY;
 
-async function send_api_msg(message, chat_history) {
+async function send_api_msg(message, chat_history, model) {
   console.log("in msg");
 
   return new Promise((resolve, reject) => {
@@ -36,7 +36,7 @@ async function send_api_msg(message, chat_history) {
             content: `Using the following lecture video transcript as context, please provide a detailed answer to the user's query. Ensure that your response is directly related to the content of the transcript and highlights relevant information, Please provide the response in LaTeX format when dealing with math equations and symbols, ensuring that all mathematical expressions are written using appropriate LaTeX syntax. Context: ${contextText}`,
           },
         ],
-        model: "gemma2-9b-it",
+        model: model,
       };
 
       // Make the API request
@@ -76,7 +76,9 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "sendMessage") {
     console.log(request.message);
     console.log("Received message:", request);
-    send_api_msg(request.message, request.messages)
+    // log the model being used
+    console.log("Model being used:", request.model);
+    send_api_msg(request.message, request.messages, request.model)
       .then((data) => {
         console.log("Sending response:", data);
         sendResponse({ message: data });
