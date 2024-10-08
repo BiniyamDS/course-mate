@@ -33,10 +33,10 @@ async function send_api_msg(message, chat_history) {
           },
           {
             role: "system",
-            content: `Using the following lecture video transcript as context, please provide a detailed answer to the user's query. Ensure that your response is directly related to the content of the transcript and highlights relevant information. Context: ${contextText}`,
+            content: `Using the following lecture video transcript as context, please provide a detailed answer to the user's query. Ensure that your response is directly related to the content of the transcript and highlights relevant information, Please provide the response in LaTeX format when dealing with math equations and symbols, ensuring that all mathematical expressions are written using appropriate LaTeX syntax. Context: ${contextText}`,
           },
         ],
-        model: "llama-3.1-8b-instant",
+        model: "gemma2-9b-it",
       };
 
       // Make the API request
