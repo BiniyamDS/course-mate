@@ -5,6 +5,7 @@ import rehypeKatex from "rehype-katex";
 import remarkMath from "remark-math";
 import "katex/dist/katex.min.css";
 import { ClipLoader } from "react-spinners";
+import Tooltip from "./Tooltip"; // Import the Tooltip component
 
 function ChatSidebar({ isSubtitleLoaded }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -38,7 +39,7 @@ function ChatSidebar({ isSubtitleLoaded }) {
           action: "sendMessage",
           message: inputMessage,
           messages: messages,
-          model: selectedModel, // Include the selected model in the request
+          model: selectedModel,
         })
         .then((response) => {
           const aiMessage = {
@@ -101,31 +102,37 @@ function ChatSidebar({ isSubtitleLoaded }) {
             <div className="flex justify-between items-center p-4 border-b border-border">
               <h2 className="text-lg text-black font-semibold">Chat</h2>
               <div className="flex items-center space-x-4">
-                <select
-                  value={selectedModel}
-                  onChange={(e) => setSelectedModel(e.target.value)}
-                  className="p-2 border rounded-md bg-white text-black"
-                >
-                  {Object.keys(models).map((model, index) => (
-                    <option key={index} value={models[model]}>
-                      {model}
-                    </option>
-                  ))}
-                </select>
-                <button
-                  className="p-2 text-red-500"
-                  onClick={() => setMessages([])}
-                  aria-label="Clear chat"
-                >
-                  <Trash2 size={24} />
-                </button>
-                <button
-                  className="p-2"
-                  onClick={toggleSidebar}
-                  aria-label="Close sidebar"
-                >
-                  <X size={24} />
-                </button>
+                <Tooltip text="Select a model">
+                  <select
+                    value={selectedModel}
+                    onChange={(e) => setSelectedModel(e.target.value)}
+                    className="p-2 border rounded-md bg-white text-black"
+                  >
+                    {Object.keys(models).map((model, index) => (
+                      <option key={index} value={models[model]}>
+                        {model}
+                      </option>
+                    ))}
+                  </select>
+                </Tooltip>
+                <Tooltip text="Clear chat">
+                  <button
+                    className="p-2 text-red-500"
+                    onClick={() => setMessages([])}
+                    aria-label="Clear chat"
+                  >
+                    <Trash2 size={24} />
+                  </button>
+                </Tooltip>
+                <Tooltip text="Close">
+                  <button
+                    className="p-2"
+                    onClick={toggleSidebar}
+                    aria-label="Close sidebar"
+                  >
+                    <X size={24} />
+                  </button>
+                </Tooltip>
               </div>
             </div>
 
@@ -156,7 +163,9 @@ function ChatSidebar({ isSubtitleLoaded }) {
                     size={80}
                   />
                   <p className="text-black">Scraping subtitles...</p>
-                  <p className="text-grey-200">Please click on the Downloads section</p>
+                  <p className="text-grey-200">
+                    Please click on the Downloads section
+                  </p>
                 </div>
               )}
             </div>
@@ -171,7 +180,7 @@ function ChatSidebar({ isSubtitleLoaded }) {
                   placeholder="Type a message..."
                   value={inputMessage}
                   onChange={handleInputChange}
-                  onKeyDown={handleKeyPress} // Handle Enter key press
+                  onKeyDown={handleKeyPress}
                   className="flex-grow rounded-md text-black resize-none min-h-[40px] max-h-[120px] py-2 px-3 border border-gray-200"
                   rows={1}
                 />
