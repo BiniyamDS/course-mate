@@ -11,11 +11,11 @@ function ChatSidebar({ isSubtitleLoaded }) {
   const [messages, setMessages] = useState([
     { id: 1, text: "Hello! How can I help you today?", sender: "ai" },
   ]);
-  const models = [
-    "gemma2-9b-it",
-    "llama-3.1-70b-versatile",
-    "llama-3.1-8b-instant",
-  ];
+  const models = {
+    "Gemma 2 9B": "gemma2-9b-it",
+    "Llama 3.1 70B Versatile": "llama-3.1-70b-versatile",
+    "Llama 3.1 8B Instant": "llama-3.1-8b-instant",
+  };
   const [inputMessage, setInputMessage] = useState("");
   const [selectedModel, setSelectedModel] = useState(models[0]);
   const textareaRef = useRef(null);
@@ -67,9 +67,19 @@ function ChatSidebar({ isSubtitleLoaded }) {
     }
   };
 
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessage(e);
+    }
+  };
+
   useEffect(() => {
     if (scrollAreaRef.current) {
-      scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight;
+      const latestMessage = scrollAreaRef.current.lastElementChild;
+      if (latestMessage) {
+        latestMessage.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
     }
   }, [messages]);
 
@@ -96,8 +106,8 @@ function ChatSidebar({ isSubtitleLoaded }) {
                   onChange={(e) => setSelectedModel(e.target.value)}
                   className="p-2 border rounded-md bg-white text-black"
                 >
-                  {models.map((model, index) => (
-                    <option key={index} value={model}>
+                  {Object.keys(models).map((model, index) => (
+                    <option key={index} value={models[model]}>
                       {model}
                     </option>
                   ))}
@@ -146,6 +156,7 @@ function ChatSidebar({ isSubtitleLoaded }) {
                     size={80}
                   />
                   <p className="text-black">Scraping subtitles...</p>
+                  <p className="text-grey-200">Please click on the Downloads section</p>
                 </div>
               )}
             </div>
@@ -160,6 +171,7 @@ function ChatSidebar({ isSubtitleLoaded }) {
                   placeholder="Type a message..."
                   value={inputMessage}
                   onChange={handleInputChange}
+                  onKeyDown={handleKeyPress} // Handle Enter key press
                   className="flex-grow rounded-md text-black resize-none min-h-[40px] max-h-[120px] py-2 px-3 border border-gray-200"
                   rows={1}
                 />
@@ -169,7 +181,7 @@ function ChatSidebar({ isSubtitleLoaded }) {
                     isSubtitleLoaded
                       ? "bg-black text-white"
                       : "bg-gray-200 text-white"
-                  } flex-shrink-0 p-2 rounded`}
+                  } flex-shrink-0 h-[40px] w-[40px] p-2 rounded`}
                   disabled={!isSubtitleLoaded}
                 >
                   <Send size={20} />

@@ -12,7 +12,7 @@
 - [x] Restrict to use of only coursera
 - [x] Better markdown parsing
 - [x] Add feature to choose between models
-- [ ] Pressing enter to send message
+- [x] Pressing enter to send message
 - [ ] Add Ability to add your own key to the extension
 
 ## Features
