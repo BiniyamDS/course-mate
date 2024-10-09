@@ -31,18 +31,21 @@ const APIModal = ({ handleClose }) => {
   return (
     <div className="fixed inset-0 flex items-center justify-center z-[10000] bg-black bg-opacity-50">
       <div className="bg-white p-8 rounded-lg shadow-lg w-[400px] relative">
-        <button
-          onClick={handleClose}
-          className="absolute top-2 right-2 text-gray-600 hover:text-gray-800"
-        >
-          <X size={20} />
-        </button>
-        <h2 className="text-lg font-semibold mb-4">Enter API Key</h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-semibold">Enter API Key</h2>
+          <button
+            onClick={handleClose}
+            className="text-gray-600 hover:text-gray-800"
+          >
+            <X size={20} />
+          </button>
+        </div>
+
         <p className="text-gray-600 mb-4">
           To use the chat functionality, you need to provide your API key.
           <br />
           <a
-            href="https://youtube.com/dummy_link"
+            href="https://www.youtube.com/watch?v=TTG7Uo8lS1M"
             target="_blank"
             rel="noopener noreferrer"
             className="text-blue-500 underline"
@@ -51,7 +54,7 @@ const APIModal = ({ handleClose }) => {
           </a>
         </p>
 
-        {localStorage.getItem('apiKey') ? (
+        {localStorage.getItem("apiKey") ? (
           <div className="flex items-center mb-4">
             <input
               type="text"
@@ -63,7 +66,7 @@ const APIModal = ({ handleClose }) => {
               onClick={handleDeleteApiKey}
               className="ml-2 px-4 py-2 bg-red-500 text-white rounded-md"
             >
-              <Trash2 size={24}/>
+              <Trash2 size={24} />
             </button>
           </div>
         ) : (
