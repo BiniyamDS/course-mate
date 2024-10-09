@@ -1,11 +1,12 @@
 import React, { useState, useRef, useEffect } from "react";
-import { MessageCircle, X, Send, Trash2 } from "lucide-react";
+import { MessageCircle, X, Send, Trash2, Key, Lock } from "lucide-react";
 import ReactMarkDown from "react-markdown";
 import rehypeKatex from "rehype-katex";
 import remarkMath from "remark-math";
 import "katex/dist/katex.min.css";
 import { ClipLoader } from "react-spinners";
 import Tooltip from "./Tooltip"; // Import the Tooltip component
+import APIModal from "./APIModal";
 
 function ChatSidebar({ isSubtitleLoaded }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -18,9 +19,10 @@ function ChatSidebar({ isSubtitleLoaded }) {
     "Llama 3.1 8B Instant": "llama-3.1-8b-instant",
   };
   const [inputMessage, setInputMessage] = useState("");
-  const [selectedModel, setSelectedModel] = useState(models[0]);
+  const [selectedModel, setSelectedModel] = useState(models["Gemma 2 9B"]);
   const textareaRef = useRef(null);
   const scrollAreaRef = useRef(null);
+  const [isApiKeyModalOpen, setIsApiKeyModalOpen] = useState(false);
 
   const toggleSidebar = () => setIsOpen(!isOpen);
 
@@ -33,7 +35,7 @@ function ChatSidebar({ isSubtitleLoaded }) {
         sender: "user",
       };
       setMessages([...messages, newMessage]);
-
+      console.log(selectedModel)
       browser.runtime
         .sendMessage({
           action: "sendMessage",
@@ -86,6 +88,7 @@ function ChatSidebar({ isSubtitleLoaded }) {
 
   return (
     <>
+      {/* Button to toggle sidebar */}
       {!isOpen && (
         <button
           onClick={toggleSidebar}
@@ -96,6 +99,7 @@ function ChatSidebar({ isSubtitleLoaded }) {
         </button>
       )}
 
+      {/* Chat Sidebar */}
       {isOpen && (
         <div className="fixed inset-0 flex items-center justify-center z-[10000] pointer-events-none">
           <div className="bg-white border border-border rounded-lg shadow-lg w-1/2 h-4/5 flex flex-col overflow-hidden pointer-events-auto">
@@ -124,6 +128,23 @@ function ChatSidebar({ isSubtitleLoaded }) {
                     <Trash2 size={24} />
                   </button>
                 </Tooltip>
+                <Tooltip text="API Key">
+                  <button
+                    className={`p-2 ${
+                      localStorage.getItem("apiKey")
+                        ? "text-green-500"
+                        : "text-red-500"
+                    }`}
+                    onClick={() => setIsApiKeyModalOpen(true)}
+                    aria-label="API Key"
+                  >
+                    {localStorage.getItem("apiKey") ? (
+                      <Key size={24} />
+                    ) : (
+                      <Lock size={24} />
+                    )}
+                  </button>
+                </Tooltip>
                 <Tooltip text="Close">
                   <button
                     className="p-2"
@@ -137,36 +158,40 @@ function ChatSidebar({ isSubtitleLoaded }) {
             </div>
 
             <div className="flex-grow p-4 overflow-y-auto" ref={scrollAreaRef}>
-              {isSubtitleLoaded ? (
-                messages.map((message) => (
-                  <div
-                    key={message.id}
-                    className={`mb-4 p-2 rounded-lg ${
-                      message.sender === "user"
-                        ? "bg-black text-white ml-10"
-                        : "bg-gray-200 text-black mr-10"
-                    } max-w-[80%] break-words`}
-                  >
-                    <ReactMarkDown
-                      remarkPlugins={[remarkMath]}
-                      rehypePlugins={[rehypeKatex]}
+              {localStorage.getItem("apiKey") ? (
+                isSubtitleLoaded ? (
+                  messages.map((message) => (
+                    <div
+                      key={message.id}
+                      className={`mb-4 p-2 rounded-lg ${
+                        message.sender === "user"
+                          ? "bg-black text-white ml-10"
+                          : "bg-gray-200 text-black mr-10"
+                      } max-w-[80%] break-words`}
                     >
-                      {message.text}
-                    </ReactMarkDown>
+                      <ReactMarkDown
+                        remarkPlugins={[remarkMath]}
+                        rehypePlugins={[rehypeKatex]}
+                      >
+                        {message.text}
+                      </ReactMarkDown>
+                    </div>
+                  ))
+                ) : (
+                  <div className="flex flex-col justify-center items-center h-full">
+                    <ClipLoader
+                      color="#292416"
+                      loading={!isSubtitleLoaded}
+                      size={80}
+                    />
+                    <p className="text-black">Scraping subtitles...</p>
+                    <p className="text-grey-200">
+                      Please click on the Downloads section
+                    </p>
                   </div>
-                ))
+                )
               ) : (
-                <div className="flex flex-col justify-center items-center h-full">
-                  <ClipLoader
-                    color="#292416"
-                    loading={!isSubtitleLoaded}
-                    size={80}
-                  />
-                  <p className="text-black">Scraping subtitles...</p>
-                  <p className="text-grey-200">
-                    Please click on the Downloads section
-                  </p>
-                </div>
+                <div>Api key not found</div>
               )}
             </div>
 
@@ -200,6 +225,10 @@ function ChatSidebar({ isSubtitleLoaded }) {
           </div>
         </div>
       )}
+      {isApiKeyModalOpen ? (
+        <APIModal handleClose={() => setIsApiKeyModalOpen(false)} />
+        // console.log('hi')
+      ) : console.log('hello')}
     </>
   );
 }

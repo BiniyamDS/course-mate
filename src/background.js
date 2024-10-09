@@ -11,11 +11,9 @@ async function send_api_msg(message, chat_history, model) {
     browser.storage.local.get("subtitleContent").then((data) => {
       if (data["subtitleContent"]) {
         contextText = data["subtitleContent"];
-        console.log(`in local: ${contextText}`);
       }
 
       const url = new URL(groqApiUrl);
-      console.log(`context: ${contextText}`);
 
       // Convert your stored chat history to the required format for the API
       const formattedHistory = chat_history.map((msg) => ({
@@ -115,7 +113,6 @@ browser.runtime.onMessage.addListener((request, sender, sendSubtitles) => {
         // Store the content in Firefox storage
         browser.storage.local.set({ subtitleContent: textContent }).then(() => {
           console.log("Subtitle content stored in Firefox storage.");
-          console.log(textContent);
           sendSubtitles({ success: true });
         });
       })
