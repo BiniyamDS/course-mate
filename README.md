@@ -14,6 +14,8 @@
 - [x] Add feature to choose between models
 - [x] Pressing enter to send message
 - [x] Add Ability to add your own key to the extension
+- [x] Polish Add key Modal UI
+- [ ] Publish to firefox extensions store
 
 ## Features
 - **Collapsible Chat Sidebar**: A toggleable chat interface that opens on the right side of any webpage.
