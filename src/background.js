@@ -1,17 +1,24 @@
 const groqApiUrl = "https://api.groq.com/openai/v1/chat/completions";
-const groqApiKey = process.env.GROQ_API_KEY;
+// const groqApiKey = process.env.GROQ_API_KEY;
 
 async function send_api_msg(message, chat_history, model) {
   console.log("in msg");
 
   return new Promise((resolve, reject) => {
     let contextText = `the user is watching a lecture on coursera`;
+    let groqApiKey = "aa";
 
+    browser.storage.local.get("groq_key").then((data) => {
+      if (data["groq_key"]) {
+        groqApiKey = data["groq_key"];
+      }
+    });
     // Retrieve subtitleContent from local storage
     browser.storage.local.get("subtitleContent").then((data) => {
       if (data["subtitleContent"]) {
         contextText = data["subtitleContent"];
       }
+      console.log(`groq: ${groqApiKey}`);
 
       const url = new URL(groqApiUrl);
 
@@ -90,7 +97,10 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
       })
       .catch((error) => {
         console.error("Error sending response:", error);
-        sendResponse({ error: error.message });
+        sendResponse({
+          error: error.message,
+          message: "Error sending message",
+        });
       });
     return true; // Keep the message channel open for sendResponse
   }
@@ -121,6 +131,15 @@ browser.runtime.onMessage.addListener((request, sender, sendSubtitles) => {
         sendSubtitles({ success: false, error: error.message });
       });
 
+    return true; // Keep the message channel open for sendResponse
+  }
+});
+browser.runtime.onMessage.addListener((request, sender, store_key) => {
+  if (request.action === "storeKey") {
+    browser.storage.local.set({ groq_key: request.api_key }).then(() => {
+      console.log("API key stored in Firefox storage.");
+      store_key({ success: true });
+    });
     return true; // Keep the message channel open for sendResponse
   }
 });

@@ -7,6 +7,7 @@ import "katex/dist/katex.min.css";
 import { ClipLoader } from "react-spinners";
 import Tooltip from "./Tooltip"; // Import the Tooltip component
 import APIModal from "./APIModal";
+import NotFound from "./NotFound";
 
 function ChatSidebar({ isSubtitleLoaded }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -191,7 +192,7 @@ function ChatSidebar({ isSubtitleLoaded }) {
                   </div>
                 )
               ) : (
-                <div>Api key not found</div>
+                <NotFound/>
               )}
             </div>
 

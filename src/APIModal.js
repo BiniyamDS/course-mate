@@ -6,6 +6,18 @@ const APIModal = ({ handleClose }) => {
   const handleApiKeySubmit = () => {
     if (apiKey.trim()) {
       localStorage.setItem("apiKey", apiKey);
+      browser.runtime
+        .sendMessage({ action: "storeKey", api_key: apiKey })
+        .then((response) => {
+          if (response.success) {
+            console.log("API key stored successfully");
+          } else {
+            console.error("Failed to store API key:", response.error);
+          }
+        })
+        .catch((error) => {
+          console.error("Error sending message:", error);
+        });
       handleClose();
     }
   };

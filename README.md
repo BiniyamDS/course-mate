@@ -13,7 +13,7 @@
 - [x] Better markdown parsing
 - [x] Add feature to choose between models
 - [x] Pressing enter to send message
-- [ ] Add Ability to add your own key to the extension
+- [x] Add Ability to add your own key to the extension
 
 ## Features
 - **Collapsible Chat Sidebar**: A toggleable chat interface that opens on the right side of any webpage.
