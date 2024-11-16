@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { MessageCircle, X, Send, Trash2, Key, Lock } from "lucide-react";
+import { MessageCircle, X, Send, Trash2, Key, Lock, RefreshCcw } from "lucide-react";
 import ReactMarkDown from "react-markdown";
 import rehypeKatex from "rehype-katex";
 import remarkMath from "remark-math";
@@ -9,7 +9,7 @@ import Tooltip from "./Tooltip"; // Import the Tooltip component
 import APIModal from "./APIModal";
 import NotFound from "./NotFound";
 
-function ChatSidebar({ isSubtitleLoaded }) {
+function ChatSidebar({ isSubtitleLoaded, updateSub, setLoaded }) {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
     { id: 1, text: "Hello! How can I help you today?", sender: "ai" },
@@ -36,7 +36,7 @@ function ChatSidebar({ isSubtitleLoaded }) {
         sender: "user",
       };
       setMessages([...messages, newMessage]);
-      console.log(selectedModel)
+      console.log(selectedModel);
       browser.runtime
         .sendMessage({
           action: "sendMessage",
@@ -120,6 +120,15 @@ function ChatSidebar({ isSubtitleLoaded }) {
                     ))}
                   </select>
                 </Tooltip>
+                <Tooltip text="Update subtitles">
+                  <button
+                    className="p-2 text-blue-500"
+                    onClick={() => updateSub(setLoaded)}
+                    aria-label="Update subtitles"
+                  >
+                    <RefreshCcw size={24} />
+                  </button>
+                </Tooltip>
                 <Tooltip text="Clear chat">
                   <button
                     className="p-2 text-red-500"
@@ -192,7 +201,7 @@ function ChatSidebar({ isSubtitleLoaded }) {
                   </div>
                 )
               ) : (
-                <NotFound/>
+                <NotFound />
               )}
             </div>
 
@@ -228,8 +237,10 @@ function ChatSidebar({ isSubtitleLoaded }) {
       )}
       {isApiKeyModalOpen ? (
         <APIModal handleClose={() => setIsApiKeyModalOpen(false)} />
+      ) : (
         // console.log('hi')
-      ) : console.log('hello')}
+        console.log("hello")
+      )}
     </>
   );
 }

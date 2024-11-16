@@ -24,6 +24,18 @@ function scrapeAndUpdateLinks(setSubLoaded) {
   });
 }
 
+async function updateSubtitles(setSubLoaded) {
+  try {
+      // Delete the value with the specified key name from local storage
+      console.log(`Deleted value with key: subtitleContent`);
+
+      // Set the loaded state to false
+      scrapeAndUpdateLinks(setSubLoaded)
+  } catch (error) {
+      console.error('Error updating storage:', error);
+  }
+}
+
 function downloadAndStoreSubtitle(href, setSubLoaded) {
   console.log(`Requesting to download subtitle file from: ${href}`);
 
@@ -82,7 +94,7 @@ const App = () => {
   // Create a root and render the component
   return (
     <React.StrictMode>
-      <ChatSidebar isSubtitleLoaded={subLoaded} />
+      <ChatSidebar isSubtitleLoaded={subLoaded} updateSub={updateSubtitles} setLoaded={setSubLoaded}/>
     </React.StrictMode>
   );
 };
