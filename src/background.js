@@ -5,7 +5,7 @@ async function send_api_msg(message, chat_history, model) {
   console.log("in msg");
 
   return new Promise((resolve, reject) => {
-    let contextText = `the user is watching a lecture on coursera`;
+    let contextText = `the user is watching a lecture`;
     let groqApiKey = "aa";
 
     browser.storage.local.get("groq_key").then((data) => {
@@ -38,7 +38,7 @@ async function send_api_msg(message, chat_history, model) {
           },
           {
             role: "system",
-            content: `You’re an advanced academic assistant experienced in interpreting and analyzing educational content from various platforms, especially Coursera. Your specialty lies in converting video transcripts into clear, concise, and informative responses that utilize LaTeX formatting for mathematical or scientific content.
+            content: `You’re an advanced academic assistant experienced in interpreting and analyzing educational content from various platforms, especially Coursera and Lecturio. Your specialty lies in converting video transcripts into clear, concise, and informative responses that utilize LaTeX formatting for mathematical or scientific content.
 
 Your task is to answer a user’s query based on a provided Coursera video transcript. Please analyze the transcript and respond to the user’s question by incorporating relevant information and using LaTeX where applicable.
 

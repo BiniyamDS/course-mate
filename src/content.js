@@ -9,13 +9,12 @@ document.body.appendChild(container);
 
 let observer; // Declare the observer variable
 
-function scrapeAndUpdateLinks(setSubLoaded) {
-
+function scrapeAndUpdateLinksForCoursera(setSubLoaded) {
   // Scrape anchor tags with a download attribute set to "transcript.txt" and get their href attributes
   const anchorTags = document.querySelectorAll('a[download="transcript.txt"]');
   let hrefList = [];
 
-  anchorTags.forEach((anchor, index) => {
+  anchorTags.forEach((anchor) => {
     const href = anchor.getAttribute("href");
     if (href) {
       hrefList.push(href); // Add href to the list
@@ -24,15 +23,74 @@ function scrapeAndUpdateLinks(setSubLoaded) {
   });
 }
 
+async function saveSubtitleContent(textContent) {
+  try {
+      await browser.storage.local.set({ subtitleContent: textContent });
+      console.log("Subtitle content saved successfully.");
+  } catch (error) {
+      console.error("Error saving subtitle content:", error);
+  }
+}
+
+function scrapeAndStoreLecturioSubtitles(setSubLoaded) {
+  console.log("Extracting subtitles from Lecturio...");
+
+  // new code
+  const container = document.querySelector(
+    "div.MuiList-root.MuiList-dense.css-1uzmcsd"
+  );
+
+  // Check if the container exists
+  if (!container) {
+    console.error("Transcript container not found.");
+    return "";
+  }
+
+  // Find all the subtitle text spans
+  const subtitles = container.querySelectorAll(
+    "span.MuiTypography-root.MuiTypography-inherit.MuiLink-root.MuiLink-underlineHover.css-gw8ftq"
+  );
+  console.log(subtitles);
+
+  // Extract and concatenate the text content
+  let transcript = "";
+  subtitles.forEach((element) => {
+    transcript += element.textContent.trim() + " ";
+  });
+
+  // Return the combined transcript
+  // new code
+
+  // Store the subtitles in local storage
+  saveSubtitleContent(transcript)
+  console.log("Subtitles stored in local storage under 'subtitleContent'.");
+  if (observer) {
+    observer.disconnect();
+    console.log("Stopped observing DOM changes.");
+  }
+
+  // Trigger the subtitles loaded state
+  setSubLoaded(true);
+}
+
 async function updateSubtitles(setSubLoaded) {
   try {
-      // Delete the value with the specified key name from local storage
-      console.log(`Deleted value with key: subtitleContent`);
+    // console.log(`Deleted value with key: subtitleContent`);
+    // localStorage.removeItem("subtitleContent"); // Clear existing subtitles
 
-      // Set the loaded state to false
-      scrapeAndUpdateLinks(setSubLoaded)
+    // Check the current domain and scrape accordingly
+    const currentSite = window.location.hostname;
+    if (currentSite.includes("lecturio.com")) {
+      console.log("Site detected: Lecturio");
+      scrapeAndStoreLecturioSubtitles(setSubLoaded);
+    } else if (currentSite.includes("coursera.org")) {
+      console.log("Site detected: Coursera");
+      scrapeAndUpdateLinksForCoursera(setSubLoaded);
+    } else {
+      console.log("Site not supported.");
+    }
   } catch (error) {
-      console.error('Error updating storage:', error);
+    console.error("Error updating storage:", error);
   }
 }
 
@@ -68,16 +126,14 @@ const App = () => {
     // Inject the div when the DOM is fully loaded, and scrape links
     if (document.readyState === "complete") {
       console.log("Document is already fully loaded.");
-      scrapeAndUpdateLinks(setSubLoaded);
+      updateSubtitles(setSubLoaded);
     } else {
       console.log(
         "Document is not fully loaded yet. Adding load event listener..."
       );
       window.addEventListener("load", () => {
-        console.log(
-          "Window loaded, running injectHelloWorldDiv and scrapeAndUpdateLinks..."
-        );
-        scrapeAndUpdateLinks(setSubLoaded);
+        console.log("Window loaded, running updateSubtitles...");
+        updateSubtitles(setSubLoaded);
       });
     }
 
@@ -94,7 +150,11 @@ const App = () => {
   // Create a root and render the component
   return (
     <React.StrictMode>
-      <ChatSidebar isSubtitleLoaded={subLoaded} updateSub={updateSubtitles} setLoaded={setSubLoaded}/>
+      <ChatSidebar
+        isSubtitleLoaded={subLoaded}
+        updateSub={updateSubtitles}
+        setLoaded={setSubLoaded}
+      />
     </React.StrictMode>
   );
 };
@@ -106,7 +166,7 @@ function observeDOMChanges(setSubLoaded) {
   observer = new MutationObserver((mutations) => {
     for (const mutation of mutations) {
       if (mutation.addedNodes.length) {
-        scrapeAndUpdateLinks(setSubLoaded);
+        updateSubtitles(setSubLoaded);
       }
     }
   });
