@@ -15,8 +15,9 @@
 - [x] Pressing enter to send message
 - [x] Add Ability to add your own key to the extension
 - [x] Polish Add key Modal UI
+- [x] Update transcript
+- [x] Extend functionality to include lecturio
 - [ ] Fix API key loading
-- [ ] Update transcript
 - [ ] Button to generate a notion summary
 - [ ] Fix CORS issue
 - [ ] Button to move to the bottom
