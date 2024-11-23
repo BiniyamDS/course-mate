@@ -52,7 +52,7 @@ module.exports = {
           to: path.resolve("dist"),
         },
         {
-          from: path.resolve("./src/assets/icon.png"),
+          from: path.resolve("./src/assets/icon.jpeg"),
           to: path.resolve("dist"),
         },
         {

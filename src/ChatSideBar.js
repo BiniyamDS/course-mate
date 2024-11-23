@@ -1,5 +1,13 @@
 import React, { useState, useRef, useEffect } from "react";
-import { MessageCircle, X, Send, Trash2, Key, Lock, RefreshCcw } from "lucide-react";
+import {
+  MessageCircle,
+  X,
+  Send,
+  Trash2,
+  Key,
+  Lock,
+  RefreshCcw,
+} from "lucide-react";
 import ReactMarkDown from "react-markdown";
 import rehypeKatex from "rehype-katex";
 import remarkMath from "remark-math";
@@ -24,6 +32,14 @@ function ChatSidebar({ isSubtitleLoaded, updateSub, setLoaded }) {
   const textareaRef = useRef(null);
   const scrollAreaRef = useRef(null);
   const [isApiKeyModalOpen, setIsApiKeyModalOpen] = useState(false);
+  const [api_key, setApiKey] = useState(localStorage.getItem("apiKey") || "");
+
+  useEffect(() => {
+    if (api_key) {
+      console.log("Found API key in local storage");
+      store_api_key(api_key);
+    }
+  }, []);
 
   const toggleSidebar = () => setIsOpen(!isOpen);
 
@@ -77,6 +93,21 @@ function ChatSidebar({ isSubtitleLoaded, updateSub, setLoaded }) {
       handleSendMessage(e);
     }
   };
+
+  function store_api_key(apiKey) {
+    browser.runtime
+      .sendMessage({ action: "storeKey", api_key: apiKey })
+      .then((response) => {
+        if (response.success) {
+          console.log("API key stored successfully");
+        } else {
+          console.error("Failed to store API key:", response.error);
+        }
+      })
+      .catch((error) => {
+        console.error("Error sending message:", error);
+      });
+  }
 
   useEffect(() => {
     if (scrollAreaRef.current) {
@@ -236,7 +267,10 @@ function ChatSidebar({ isSubtitleLoaded, updateSub, setLoaded }) {
         </div>
       )}
       {isApiKeyModalOpen ? (
-        <APIModal handleClose={() => setIsApiKeyModalOpen(false)} />
+        <APIModal
+          handleClose={() => setIsApiKeyModalOpen(false)}
+          store_key={store_api_key}
+        />
       ) : (
         // console.log('hi')
         console.log("hello")

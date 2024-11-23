@@ -1,27 +1,19 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { X, Trash2 } from "lucide-react"; // Import the close icon
 
-const APIModal = ({ handleClose }) => {
+const APIModal = ({ handleClose, store_key }) => {
   const [apiKey, setApiKey] = useState(localStorage.getItem("apiKey") || "");
 
   const handleApiKeySubmit = () => {
     if (apiKey.trim()) {
       localStorage.setItem("apiKey", apiKey);
-      browser.runtime
-        .sendMessage({ action: "storeKey", api_key: apiKey })
-        .then((response) => {
-          if (response.success) {
-            console.log("API key stored successfully");
-          } else {
-            console.error("Failed to store API key:", response.error);
-          }
-        })
-        .catch((error) => {
-          console.error("Error sending message:", error);
-        });
+      
+      store_key(apiKey);
       handleClose();
     }
   };
+
+  
 
   const handleDeleteApiKey = () => {
     localStorage.removeItem("apiKey");

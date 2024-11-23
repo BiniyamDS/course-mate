@@ -17,10 +17,10 @@
 - [x] Polish Add key Modal UI
 - [x] Update transcript
 - [x] Extend functionality to include lecturio
-- [ ] Fix API key loading
-- [ ] Button to generate a notion summary
+- [x] Fix API key loading
 - [ ] Fix CORS issue
 - [ ] Button to move to the bottom
+- [ ] Button to generate a notion summary
 - [ ] Publish to firefox extensions store
 
 ## Features
