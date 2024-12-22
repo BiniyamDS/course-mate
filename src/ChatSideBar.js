@@ -7,7 +7,9 @@ import {
   Key,
   Lock,
   RefreshCcw,
-} from "lucide-react";
+  Sun,
+  Moon,
+} from "lucide-react"; // Import Sun and Moon icons
 import ReactMarkDown from "react-markdown";
 import rehypeKatex from "rehype-katex";
 import remarkMath from "remark-math";
@@ -19,6 +21,7 @@ import NotFound from "./NotFound";
 
 function ChatSidebar({ isSubtitleLoaded, updateSub, setLoaded }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(false); // Add state for dark mode
   const [messages, setMessages] = useState([
     { id: 1, text: "Hello! How can I help you today?", sender: "ai" },
   ]);
@@ -42,6 +45,7 @@ function ChatSidebar({ isSubtitleLoaded, updateSub, setLoaded }) {
   }, []);
 
   const toggleSidebar = () => setIsOpen(!isOpen);
+  const toggleDarkMode = () => setIsDarkMode(!isDarkMode); // Add function to toggle dark mode
 
   const handleSendMessage = (e) => {
     e.preventDefault();
@@ -133,11 +137,28 @@ function ChatSidebar({ isSubtitleLoaded, updateSub, setLoaded }) {
 
       {/* Chat Sidebar */}
       {isOpen && (
-        <div className="fixed inset-0 flex items-center justify-center z-[10000] pointer-events-none">
-          <div className="bg-white border border-border rounded-lg shadow-lg w-1/2 h-4/5 flex flex-col overflow-hidden pointer-events-auto">
-            <div className="flex justify-between items-center p-4 border-b border-border">
-              <h2 className="text-lg text-black font-semibold">Chat</h2>
+        <div
+          className={`fixed inset-0 flex items-center justify-center z-[10000] pointer-events-none bg-transparent`}
+        >
+          <div
+            className={`border rounded-lg shadow-lg w-1/2 h-4/5 flex flex-col overflow-hidden pointer-events-auto ${
+              isDarkMode
+                ? "bg-gray-800 text-white border-gray-700"
+                : "bg-white text-black border-border"
+            }`}
+          >
+            <div className={`flex justify-between items-center p-4 ${isDarkMode ? 'border-b border-gray-700' : 'border-b border-border'}`}>
+              <h2 className="text-lg font-semibold">Chat</h2>
               <div className="flex items-center space-x-4">
+                <Tooltip text="Toggle Dark Mode">
+                  <button
+                    className="p-2"
+                    onClick={toggleDarkMode}
+                    aria-label="Toggle dark mode"
+                  >
+                    {isDarkMode ? <Sun size={24} /> : <Moon size={24} />}
+                  </button>
+                </Tooltip>
                 <Tooltip text="Select a model">
                   <select
                     value={selectedModel}
@@ -206,8 +227,16 @@ function ChatSidebar({ isSubtitleLoaded, updateSub, setLoaded }) {
                       key={message.id}
                       className={`mb-4 p-2 rounded-lg ${
                         message.sender === "user"
-                          ? "bg-black text-white ml-10"
-                          : "bg-gray-200 text-black mr-10"
+                          ? `${
+                              isDarkMode
+                                ? "bg-blue-700 text-white"
+                                : "bg-black text-white"
+                            } ml-10`
+                          : `${
+                              isDarkMode
+                                ? "bg-gray-600 text-white"
+                                : "bg-gray-200 text-black"
+                            } mr-10`
                       } max-w-[80%] break-words`}
                     >
                       <ReactMarkDown
@@ -238,7 +267,7 @@ function ChatSidebar({ isSubtitleLoaded, updateSub, setLoaded }) {
 
             <form
               onSubmit={handleSendMessage}
-              className="p-4 border-t border-border"
+              className={`p-4 ${isDarkMode ? 'border-t border-gray-700' : 'border-t border-border'}`}
             >
               <div className="flex items-end space-x-2">
                 <textarea
@@ -247,15 +276,27 @@ function ChatSidebar({ isSubtitleLoaded, updateSub, setLoaded }) {
                   value={inputMessage}
                   onChange={handleInputChange}
                   onKeyDown={handleKeyPress}
-                  className="flex-grow rounded-md text-black resize-none min-h-[40px] max-h-[120px] py-2 px-3 border border-gray-200"
+                  className={`flex-grow rounded-md resize-none min-h-[40px] max-h-[120px] py-2 px-3 border ${
+                    isDarkMode
+                      ? "bg-gray-700 text-white border-gray-600"
+                      : "bg-white text-black border-gray-200"
+                  }`}
                   rows={1}
                 />
                 <button
                   type="submit"
                   className={`${
                     isSubtitleLoaded
-                      ? "bg-black text-white"
-                      : "bg-gray-200 text-white"
+                      ? `${
+                          isDarkMode
+                            ? "bg-blue-700 text-white"
+                            : "bg-black text-white"
+                        }`
+                      : `${
+                          isDarkMode
+                            ? "bg-gray-600 text-white"
+                            : "bg-gray-200 text-white"
+                        }`
                   } flex-shrink-0 h-[40px] w-[40px] p-2 rounded`}
                   disabled={!isSubtitleLoaded}
                 >
