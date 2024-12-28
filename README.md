@@ -18,10 +18,12 @@
 - [x] Update transcript
 - [x] Extend functionality to include lecturio
 - [x] Fix API key loading
-- [ ] Fix CORS issue
+- [x] Fix textbox issue
 - [ ] Button to move to the bottom
+- [ ] Fix CORS issue
 - [ ] Button to generate a notion summary
 - [ ] Publish to firefox extensions store
+- [ ] Update the chrome version
 
 ## Features
 - **Collapsible Chat Sidebar**: A toggleable chat interface that opens on the right side of any webpage.

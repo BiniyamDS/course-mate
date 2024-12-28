@@ -27,7 +27,7 @@ function ChatSidebar({ isSubtitleLoaded, updateSub, setLoaded }) {
   ]);
   const models = {
     "Gemma 2 9B": "gemma2-9b-it",
-    "Llama 3.1 70B Versatile": "llama-3.1-70b-versatile",
+    "Llama 3.3 70B Versatile": "llama-3.3-70b-versatile",
     "Llama 3.1 8B Instant": "llama-3.1-8b-instant",
   };
   const [inputMessage, setInputMessage] = useState("");
@@ -72,10 +72,12 @@ function ChatSidebar({ isSubtitleLoaded, updateSub, setLoaded }) {
           };
           setMessages((prevMessages) => [...prevMessages, aiMessage]);
           setInputMessage("");
+          resetTextareaHeight(); // Reset textarea height when message is sent
         })
         .catch((error) => console.error("Error sending message:", error));
 
       setInputMessage("");
+      resetTextareaHeight(); // Reset textarea height when message is sent
     }
   };
 
@@ -88,6 +90,12 @@ function ChatSidebar({ isSubtitleLoaded, updateSub, setLoaded }) {
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto";
       textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+    }
+  };
+
+  const resetTextareaHeight = () => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
     }
   };
 
@@ -163,7 +171,7 @@ function ChatSidebar({ isSubtitleLoaded, updateSub, setLoaded }) {
                   <select
                     value={selectedModel}
                     onChange={(e) => setSelectedModel(e.target.value)}
-                    className="p-2 border rounded-md bg-white text-black"
+                    className={`p-2 border rounded-md ${isDarkMode ? 'bg-gray-700 text-white border-gray-600' : 'bg-white text-black border-gray-200'}`}
                   >
                     {Object.keys(models).map((model, index) => (
                       <option key={index} value={models[model]}>
