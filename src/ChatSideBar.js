@@ -26,12 +26,12 @@ function ChatSidebar({ isSubtitleLoaded, updateSub, setLoaded }) {
     { id: 1, text: "Hello! How can I help you today?", sender: "ai" },
   ]);
   const models = {
-    "Gemma 2 9B": "gemma2-9b-it",
     "Llama 3.3 70B Versatile": "llama-3.3-70b-versatile",
+    "Gemma 2 9B": "gemma2-9b-it",
     "Llama 3.1 8B Instant": "llama-3.1-8b-instant",
   };
   const [inputMessage, setInputMessage] = useState("");
-  const [selectedModel, setSelectedModel] = useState(models["Gemma 2 9B"]);
+  const [selectedModel, setSelectedModel] = useState(models["Llama 3.3 70B Versatile"]);
   const textareaRef = useRef(null);
   const scrollAreaRef = useRef(null);
   const [isApiKeyModalOpen, setIsApiKeyModalOpen] = useState(false);
